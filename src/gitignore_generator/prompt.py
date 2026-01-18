@@ -53,6 +53,9 @@ def prompt_os_selection() -> List[str]:
     detected_os = get_platform_name()
     available_os = ['Windows', 'macOS', 'Linux']
     
+    # Create case-insensitive mapping
+    os_mapping = {os.lower(): os for os in available_os}
+    
     print(f"\n=== Operating System Selection ===")
     print(f"Detected: {detected_os}\n")
     print("Available options: Windows, macOS, Linux")
@@ -68,11 +71,18 @@ def prompt_os_selection() -> List[str]:
         if not user_input:
             selected = [detected_os]
         else:
-            # Parse comma-separated input
-            selected = [os.strip().capitalize() for os in user_input.split(',')]
+            # Parse comma-separated input and map to correct casing
+            user_selections = [os.strip().lower() for os in user_input.split(',')]
+            selected = []
+            invalid = []
+            
+            for user_os in user_selections:
+                if user_os in os_mapping:
+                    selected.append(os_mapping[user_os])
+                else:
+                    invalid.append(user_os)
         
         # Validate
-        invalid = [os for os in selected if os not in available_os]
         if invalid:
             print(f"Invalid options: {', '.join(invalid)}")
             print(f"Available: {', '.join(available_os)}")
