@@ -60,6 +60,7 @@ target-version = ["py38"]
 [tool.isort]
 profile = "black"
 line_length = 100
+force_single_line = true
 
 [tool.mypy]
 python_version = "3.8"

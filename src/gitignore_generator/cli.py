@@ -4,21 +4,21 @@ Coordinates template fetching, user interaction, and file generation.
 """
 
 from pathlib import Path
-from typing import List, Tuple, Optional
+from typing import List
+from typing import Optional
+from typing import Tuple
 
 from . import __version__
-from .templates import TemplateManager
-from .prompt import (
-    prompt_os_selection,
-    prompt_and_resolve_languages,
-    prompt_additional_templates,
-    prompt_merge_strategy,
-    show_summary,
-    prompt_dry_run,
-    show_template_search_results,
-    show_message,
-)
 from .generator import GitignoreGenerator
+from .prompt import prompt_additional_templates
+from .prompt import prompt_and_resolve_languages
+from .prompt import prompt_dry_run
+from .prompt import prompt_merge_strategy
+from .prompt import prompt_os_selection
+from .prompt import show_message
+from .prompt import show_summary
+from .prompt import show_template_search_results
+from .templates import TemplateManager
 
 
 class GitignoreGeneratorCLI:

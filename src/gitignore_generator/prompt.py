@@ -4,7 +4,9 @@ Handles OS selection, template search, merging strategy, and confirmation.
 """
 
 import platform
-from typing import List, Tuple, Optional
+from typing import List
+from typing import Optional
+from typing import Tuple
 
 
 def get_platform_name() -> str:

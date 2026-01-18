@@ -2,7 +2,6 @@
 Tests for user prompts and interaction
 """
 
-import pytest
 from gitignore_generator.prompt import get_platform_name
 
 

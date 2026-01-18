@@ -5,12 +5,15 @@ Local caching to ~/.cache/gitignore-generator/ to minimize network calls.
 """
 
 import json
-import urllib.request
-import urllib.error
-from pathlib import Path
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
 import os
+import urllib.error
+import urllib.request
+from datetime import datetime
+from datetime import timedelta
+from pathlib import Path
+from typing import Dict
+from typing import List
+from typing import Optional
 
 GITHUB_API_BASE = "https://api.github.com/repos/github/gitignore/contents"
 GITHUB_RAW_BASE = "https://raw.githubusercontent.com/github/gitignore/main"

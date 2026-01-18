@@ -4,7 +4,7 @@ Tests for .gitignore generation and merging
 
 import tempfile
 from pathlib import Path
-import pytest
+
 from gitignore_generator.generator import GitignoreGenerator
 
 

@@ -3,9 +3,11 @@
 Handles combining templates, removing duplicates, and preserving existing content.
 """
 
-from pathlib import Path
-from typing import List, Tuple, Optional
 import re
+from pathlib import Path
+from typing import List
+from typing import Optional
+from typing import Tuple
 
 
 class GitignoreGenerator:
