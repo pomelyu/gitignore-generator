@@ -5,13 +5,11 @@ Coordinates template fetching, user interaction, and file generation.
 
 from pathlib import Path
 from typing import List, Tuple, Optional
-import sys
 
 from . import __version__
 from .templates import TemplateManager
 from .prompt import (
     prompt_os_selection,
-    prompt_programming_languages,
     prompt_and_resolve_languages,
     prompt_additional_templates,
     prompt_merge_strategy,
@@ -19,7 +17,6 @@ from .prompt import (
     prompt_dry_run,
     show_template_search_results,
     show_message,
-    get_platform_name
 )
 from .generator import GitignoreGenerator
 
@@ -130,30 +127,7 @@ class GitignoreGeneratorCLI:
         selected_languages = prompt_and_resolve_languages(self.template_manager)
         
         # Step 4: Get additional templates
-        print("\n=== Additional Templates Search ===")
-        additional_templates = []
-        while True:
-            try:
-                search_query = input("> Search for template (or press Enter to skip): ").strip()
-            except EOFError:
-                break
-                
-            if not search_query:
-                break
-            
-            matches = self.template_manager.search_templates(search_query)
-            if not matches:
-                show_message(f"No templates found for '{search_query}'", "warning")
-                continue
-            
-            if len(matches) == 1:
-                selected = matches[0]
-            else:
-                selected = show_template_search_results(matches, search_query)
-            
-            if selected:
-                additional_templates.append(selected)
-                show_message(f"Added: {selected}", "success")
+        additional_templates = prompt_additional_templates(self.template_manager)
         
         # Step 5: Show summary and confirm
         all_templates = os_templates + selected_languages + additional_templates

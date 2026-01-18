@@ -95,35 +95,6 @@ def prompt_os_selection() -> List[str]:
         return selected
 
 
-def prompt_programming_languages() -> List[str]:
-    """
-    Prompt user to enter raw language names (without resolution).
-    Returns list of unresolved language template names.
-    This function is kept for backwards compatibility.
-    """
-    print(f"\n=== Programming Language Selection ===")
-    print("Enter language names (e.g., Python, Node, Java, C++)")
-    print("Or leave blank to skip.\n")
-    
-    languages = []
-    while True:
-        try:
-            user_input = input("> Enter language (or press Enter to finish): ").strip()
-        except EOFError:
-            break
-        
-        if not user_input:
-            break
-        
-        # Clean input
-        lang = user_input.strip()
-        if lang and lang not in languages:
-            languages.append(lang)
-            print(f"✓ Added: {lang}")
-    
-    return languages
-
-
 def prompt_and_resolve_languages(template_manager) -> List[str]:
     """
     Prompt user to enter programming languages and resolve them immediately.
@@ -202,24 +173,35 @@ def prompt_and_resolve_languages(template_manager) -> List[str]:
     return languages
 
 
-def prompt_additional_templates() -> List[str]:
+def prompt_additional_templates(template_manager) -> List[str]:
     """
     Prompt user to search for and add additional templates.
     Returns list of selected template names.
     """
-    print(f"\n=== Additional Templates ===")
-    print("Search and add other templates (editors, tools, etc.)")
-    print("Or leave blank to skip.\n")
-    
+    print("\n=== Additional Templates Search ===")
     templates = []
     while True:
-        user_input = input("> Search for template (or press Enter to finish): ").strip()
-        
-        if not user_input:
+        try:
+            search_query = input("> Search for template (or press Enter to skip): ").strip()
+        except EOFError:
+            break
+            
+        if not search_query:
             break
         
-        # Return the search query - caller will handle search and selection
-        templates.append(user_input)
+        matches = template_manager.search_templates(search_query)
+        if not matches:
+            show_message(f"No templates found for '{search_query}'", "warning")
+            continue
+        
+        if len(matches) == 1:
+            selected = matches[0]
+        else:
+            selected = show_template_search_results(matches, search_query)
+        
+        if selected:
+            templates.append(selected)
+            show_message(f"Added: {selected}", "success")
     
     return templates
 
