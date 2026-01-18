@@ -12,6 +12,7 @@ from .templates import TemplateManager
 from .prompt import (
     prompt_os_selection,
     prompt_programming_languages,
+    prompt_and_resolve_languages,
     prompt_additional_templates,
     prompt_merge_strategy,
     show_summary,
@@ -125,27 +126,8 @@ class GitignoreGeneratorCLI:
         selected_os = prompt_os_selection()
         os_templates = self._map_os_to_templates(selected_os)
         
-        # Step 3: Get programming languages
-        selected_languages_input = prompt_programming_languages()
-        selected_languages = []
-        
-        # Resolve language names to actual templates
-        for lang in selected_languages_input:
-            resolved = self.template_manager.resolve_template(lang)
-            if resolved:
-                selected_languages.append(resolved)
-            else:
-                # Try searching
-                matches = self.template_manager.search_templates(lang)
-                if matches:
-                    if len(matches) == 1:
-                        selected_languages.append(matches[0])
-                    else:
-                        selected = show_template_search_results(matches, lang)
-                        if selected:
-                            selected_languages.append(selected)
-                else:
-                    show_message(f"Template not found for language: {lang}", "warning")
+        # Step 3: Get programming languages (with immediate resolution)
+        selected_languages = prompt_and_resolve_languages(self.template_manager)
         
         # Step 4: Get additional templates
         print("\n=== Additional Templates Search ===")

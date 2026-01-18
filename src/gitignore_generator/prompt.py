@@ -97,8 +97,9 @@ def prompt_os_selection() -> List[str]:
 
 def prompt_programming_languages() -> List[str]:
     """
-    Prompt user to select programming languages.
-    Returns list of selected language template names.
+    Prompt user to enter raw language names (without resolution).
+    Returns list of unresolved language template names.
+    This function is kept for backwards compatibility.
     """
     print(f"\n=== Programming Language Selection ===")
     print("Enter language names (e.g., Python, Node, Java, C++)")
@@ -119,6 +120,84 @@ def prompt_programming_languages() -> List[str]:
         if lang and lang not in languages:
             languages.append(lang)
             print(f"✓ Added: {lang}")
+    
+    return languages
+
+
+def prompt_and_resolve_languages(template_manager) -> List[str]:
+    """
+    Prompt user to enter programming languages and resolve them immediately.
+    Shows template options right after user input if multiple matches exist.
+    Args:
+        template_manager: TemplateManager instance for template resolution
+    Returns:
+        List of resolved template names
+    """
+    print(f"\n=== Programming Language Selection ===")
+    print("Enter language names (e.g., Python, Node, Java, C++)")
+    print("Or leave blank to skip.\n")
+    
+    languages = []
+    while True:
+        try:
+            user_input = input("> Enter language (or press Enter to finish): ").strip()
+        except EOFError:
+            break
+        
+        if not user_input:
+            break
+        
+        lang = user_input.strip()
+        
+        # Try to resolve immediately
+        resolved = template_manager.resolve_template(lang)
+        
+        if resolved:
+            if resolved not in languages:
+                languages.append(resolved)
+                show_message(f"Added: {resolved}", "success")
+        else:
+            # Try searching for matches
+            matches = template_manager.search_templates(lang)
+            
+            if not matches:
+                show_message(f"Template not found for: {lang}", "warning")
+                continue
+            
+            if len(matches) == 1:
+                # Exactly one match - add it
+                if matches[0] not in languages:
+                    languages.append(matches[0])
+                    show_message(f"Added: {matches[0]}", "success")
+            else:
+                # Multiple matches - ask user to choose
+                print(f"\nFound {len(matches)} template(s) for '{lang}':")
+                for i, template in enumerate(matches[:10], 1):
+                    print(f"  {i}. {template}")
+                
+                if len(matches) > 10:
+                    print(f"  ... and {len(matches) - 10} more")
+                
+                while True:
+                    try:
+                        choice = input("\nSelect template number (or press Enter to skip): ").strip()
+                    except EOFError:
+                        break
+                    
+                    if not choice:
+                        break
+                    
+                    try:
+                        idx = int(choice) - 1
+                        if 0 <= idx < len(matches):
+                            selected = matches[idx]
+                            if selected not in languages:
+                                languages.append(selected)
+                                show_message(f"Added: {selected}", "success")
+                            break
+                        print(f"Invalid selection. Please enter 1-{min(10, len(matches))}")
+                    except ValueError:
+                        print("Please enter a number.")
     
     return languages
 
