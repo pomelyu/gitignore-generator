@@ -18,4 +18,4 @@ class TestCLIIntegration:
         from gitignore_generator.generator import GitignoreGenerator
         from gitignore_generator.prompt import prompt_yes_no
         
-        assert __version__ == "0.1.0"
+        assert __version__ == "0.1.1"

@@ -64,7 +64,7 @@ tests/test_templates.py::TestTemplateManager::test_cache_directory_creation PASS
 
 ```bash
 $ gitignore-generator
-✓ Gitignore Generator v0.1.0
+✓ Gitignore Generator v0.1.1
 
 === Operating System Selection ===
 Detected: macOS
@@ -179,7 +179,7 @@ npm-debug.log
 ### Install in development mode:
 ```bash
 python3 -m pip install -e .
-gitignore-generator --version  # 0.1.0
+gitignore-generator --version  # 0.1.1
 ```
 
 ### Run tests:
