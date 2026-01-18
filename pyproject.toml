@@ -31,6 +31,18 @@ Repository = "https://github.com/yourusername/gitignore-generator"
 Documentation = "https://github.com/yourusername/gitignore-generator#readme"
 "Bug Tracker" = "https://github.com/yourusername/gitignore-generator/issues"
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-cov>=2.10",
+    "black>=22.0",
+    "isort>=5.0",
+    "mypy>=0.900",
+]
+build = [
+    "pyinstaller>=6.0",
+]
+
 [project.scripts]
 gitignore-generator = "gitignore_generator.cli:main"
 
