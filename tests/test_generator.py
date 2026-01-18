@@ -31,7 +31,7 @@ class TestGitignoreGenerator:
             
             assert "##### Python #####" in result
             assert "##### Git #####" in result
-            assert "##### This Repo #####" in result
+            assert "##### Project Specific #####" in result
             assert "*.pyc" in result
 
     def test_duplicate_detection(self):

@@ -31,8 +31,16 @@ class GitignoreGenerator:
         # Normalize section header
         header = self._normalize_template_name(template_name)
         
-        # Create section with markers
-        section = f"##### {header} #####\n"
+        # Create header line
+        header_line = f"##### {header} #####"
+        
+        # Create decorative lines with same length as header
+        decorator = "#" * len(header_line)
+        
+        # Create section
+        section = decorator + "\n"
+        section += header_line + "\n"
+        section += decorator + "\n"
         section += content.rstrip() + "\n"
         
         return section
@@ -85,7 +93,7 @@ class GitignoreGenerator:
             all_rules.update(existing_rules)
             
             # Add existing content (without our markers) if it doesn't have them
-            if "##### This Repo #####" not in existing_content:
+            if "##### Project Specific #####" not in existing_content:
                 merged += existing_content.rstrip() + "\n\n"
         
         # Process each template
@@ -101,7 +109,11 @@ class GitignoreGenerator:
                 merged += section + "\n"
         
         # Add marker for user's additional rules
-        merged += "##### This Repo #####\n"
+        this_repo_header = "##### Project Specific #####"
+        decorator = "#" * len(this_repo_header)
+        merged += decorator + "\n"
+        merged += this_repo_header + "\n"
+        merged += decorator + "\n"
         merged += "# Add your project-specific rules below this line\n"
         
         return merged.rstrip() + "\n"
