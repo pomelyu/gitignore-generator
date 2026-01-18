@@ -119,28 +119,36 @@ class GitignoreGeneratorCLI:
         else:
             merge_strategy = 'create'
         
-        # Step 2: Get OS selection
+        # Step 2: Prompt and resolve OS selection
         selected_os = prompt_os_selection()
-        os_templates = self._map_os_to_templates(selected_os)
+        os_template_names = self._map_os_to_templates(selected_os)
+        show_message("Resolving OS templates...", "info")
+        os_templates = self._fetch_and_resolve_templates(os_template_names)
         
-        # Step 3: Get programming languages (with immediate resolution)
+        # Step 3: Prompt and resolve programming languages
         selected_languages = prompt_and_resolve_languages(self.template_manager)
+        show_message("Resolving language templates...", "info")
+        language_templates = self._fetch_and_resolve_templates(selected_languages)
         
-        # Step 4: Get additional templates
-        additional_templates = prompt_additional_templates(self.template_manager)
+        # Step 4: Prompt and resolve additional templates
+        additional_template_names = prompt_additional_templates(self.template_manager)
+        if additional_template_names:
+            show_message("Resolving additional templates...", "info")
+            additional_templates = self._fetch_and_resolve_templates(additional_template_names)
+        else:
+            additional_templates = []
+            additional_template_names = []
         
-        # Step 5: Show summary and confirm
-        all_templates = os_templates + selected_languages + additional_templates
-        if not show_summary(selected_os, selected_languages, additional_templates):
-            show_message("Operation cancelled", "info")
-            return 1
-        
-        # Step 6: Resolve and fetch all templates
-        show_message("Fetching templates...", "info")
-        self.selected_templates = self._fetch_and_resolve_templates(all_templates)
+        # Step 5: Combine all resolved templates
+        self.selected_templates = os_templates + language_templates + additional_templates
         
         if not self.selected_templates:
-            show_message("No templates were successfully fetched", "error")
+            show_message("No templates selected", "warning")
+            return 1
+        
+        # Step 6: Show summary and confirm
+        if not show_summary(selected_os, selected_languages, additional_template_names):
+            show_message("Operation cancelled", "info")
             return 1
         
         # Step 7: Show dry-run preview
