@@ -141,34 +141,11 @@ def prompt_and_resolve_languages(template_manager) -> List[str]:
                     languages.append(matches[0])
                     show_message(f"Added: {matches[0]}", "success")
             else:
-                # Multiple matches - ask user to choose
-                print(f"\nFound {len(matches)} template(s) for '{lang}':")
-                for i, template in enumerate(matches[:10], 1):
-                    print(f"  {i}. {template}")
-                
-                if len(matches) > 10:
-                    print(f"  ... and {len(matches) - 10} more")
-                
-                while True:
-                    try:
-                        choice = input("\nSelect template number (or press Enter to skip): ").strip()
-                    except EOFError:
-                        break
-                    
-                    if not choice:
-                        break
-                    
-                    try:
-                        idx = int(choice) - 1
-                        if 0 <= idx < len(matches):
-                            selected = matches[idx]
-                            if selected not in languages:
-                                languages.append(selected)
-                                show_message(f"Added: {selected}", "success")
-                            break
-                        print(f"Invalid selection. Please enter 1-{min(10, len(matches))}")
-                    except ValueError:
-                        print("Please enter a number.")
+                # Multiple matches - reuse selection UI
+                selected = show_template_search_results(matches, lang)
+                if selected and selected not in languages:
+                    languages.append(selected)
+                    show_message(f"Added: {selected}", "success")
     
     return languages
 
