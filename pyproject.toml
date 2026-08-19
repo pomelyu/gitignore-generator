@@ -17,6 +17,8 @@ Documentation = "https://github.com/pomelyu/gitignore-generator#readme"
 
 [dependency-groups]
 dev = [
+    "isort>=6.1.0",
+    "pylint>=3.3.9",
     "pytest>=8.4.2",
 ]
 
