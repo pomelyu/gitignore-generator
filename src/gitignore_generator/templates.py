@@ -69,7 +69,9 @@ class TemplateManager:
             try:
                 with open(MANIFEST_FILE, 'r', encoding='utf-8') as f:
                     self._manifest = json.load(f)
-                    return self._manifest
+                    if self._manifest is not None:
+                        return self._manifest
+                    raise RuntimeError()
             except Exception as e:
                 print(f"Error loading cached manifest: {e}")
 

@@ -7,12 +7,13 @@ from pathlib import Path
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
 
 class GitignoreGenerator:
     """Generates and merges .gitignore files from templates."""
 
-    def __init__(self, output_path: str = ".gitignore"):
+    def __init__(self, output_path: Union[str, Path] = ".gitignore"):
         """
         Initialize the generator.
         Args:
@@ -210,7 +211,7 @@ class GitignoreGenerator:
         summary += f"New rules to add: {len(additions)}\n"
 
         if duplicates:
-            summary += f"\nDuplicate rules (examples):\n"
+            summary += "\nDuplicate rules (examples):\n"
             for rule in sorted(duplicates)[:5]:
                 summary += f"  - {rule}\n"
             if len(duplicates) > 5:

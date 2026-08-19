@@ -70,13 +70,13 @@ def prompt_os_selection() -> List[str]:
         except EOFError:
             return [detected_os]
 
+        invalid = []
         if not user_input:
             selected = [detected_os]
         else:
             # Parse comma-separated input and map to correct casing
             user_selections = [os.strip().lower() for os in user_input.split(',')]
             selected = []
-            invalid = []
 
             for user_os in user_selections:
                 if user_os in os_mapping:
