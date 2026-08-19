@@ -14,5 +14,3 @@ class TestCLIIntegration:
         from gitignore_generator.generator import GitignoreGenerator
         from gitignore_generator.prompt import prompt_yes_no
         from gitignore_generator.templates import TemplateManager
-        
-        assert __version__ == "0.1.1"

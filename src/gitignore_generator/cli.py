@@ -2,7 +2,7 @@
 Main CLI orchestrator for gitignore generator.
 Coordinates template fetching, user interaction, and file generation.
 """
-
+import sys
 from pathlib import Path
 from typing import List
 from typing import Optional
@@ -218,6 +218,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     Returns:
         Exit code
     """
+    if argv is None:
+        argv = sys.argv[1:]
+
     try:
         cli = GitignoreGeneratorCLI()
         return cli.run_with_args(argv)

@@ -1,75 +1,37 @@
-[build-system]
-requires = ["setuptools>=45", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "gitignore-generator"
 version = "0.1.1"
-description = "A cross-platform CLI tool to generate .gitignore files from GitHub's official templates"
-readme = "README.md"
-requires-python = ">=3.8"
-authors = [{name = "Your Name"}]
+requires-python = ">=3.9"
+authors = [{name = "chinyu.chien"}]
 license = {text = "MIT"}
 keywords = ["gitignore", "cli", "git", "template"]
-classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: Software Development :: Version Control :: Git",
-]
-
-[project.urls]
-Homepage = "https://github.com/github/gitignore"
-Repository = "https://github.com/yourusername/gitignore-generator"
-Documentation = "https://github.com/yourusername/gitignore-generator#readme"
-"Bug Tracker" = "https://github.com/yourusername/gitignore-generator/issues"
-
-[project.optional-dependencies]
-dev = [
-    "pytest>=6.0",
-    "pytest-cov>=2.10",
-    "black>=22.0",
-    "isort>=5.0",
-    "mypy>=0.900",
-]
-build = [
-    "pyinstaller>=6.0",
-]
 
 [project.scripts]
 gitignore-generator = "gitignore_generator.cli:main"
 
-[tool.setuptools]
-packages = ["gitignore_generator"]
-package-dir = {"" = "src"}
+[project.urls]
+Homepage = "https://github.com/pomelyu/gitignore-generator"
+Repository = "https://github.com/pomelyu/gitignore-generator"
+Documentation = "https://github.com/pomelyu/gitignore-generator#readme"
+"Bug Tracker" = "https://github.com/pomelyu/gitignore-generator/issues"
 
-[tool.setuptools.package-data]
-gitignore_generator = ["py.typed"]
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+]
 
-[tool.black]
-line-length = 100
-target-version = ["py38"]
+[build-system]
+requires = ["uv_build>=0.8.0,<0.9.0"]
+build-backend = "uv_build"
 
-[tool.isort]
-profile = "black"
-line_length = 100
-force_single_line = true
-
-[tool.mypy]
-python_version = "3.8"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = false
-disallow_incomplete_defs = false
+[tool.uv.build-backend]
+module-root = "src"
+module-name = "gitignore_generator"
 
 [tool.pytest.ini_options]
-minversion = "6.0"
 testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
+pythonpath = ["src"]
+
+[tool.isort]
+line_length = 100
+force_single_line = true
