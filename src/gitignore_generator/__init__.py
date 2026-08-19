@@ -3,7 +3,7 @@ Gitignore Generator - A cross-platform CLI tool to generate .gitignore files
 from GitHub's official gitignore templates.
 """
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 __author__ = "chinyu.chien"
 __description__ = "Generate .gitignore files from GitHub templates"
 
