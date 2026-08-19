@@ -46,7 +46,7 @@ class TemplateManager:
         """Check if cached manifest is still valid."""
         if not MANIFEST_FILE.exists():
             return False
-        
+
         mod_time = datetime.fromtimestamp(MANIFEST_FILE.stat().st_mtime)
         age = datetime.now() - mod_time
         return age < timedelta(days=CACHE_VALIDITY_DAYS)
@@ -67,7 +67,7 @@ class TemplateManager:
         """Load manifest from cache or fetch from API."""
         if self._is_cache_valid():
             try:
-                with open(MANIFEST_FILE, 'r') as f:
+                with open(MANIFEST_FILE, 'r', encoding='utf-8') as f:
                     self._manifest = json.load(f)
                     return self._manifest
             except Exception as e:
@@ -79,7 +79,7 @@ class TemplateManager:
     def _fetch_manifest_from_api(self) -> Dict:
         """Fetch and cache the template manifest from GitHub API."""
         print("Fetching template list from GitHub...")
-        
+
         # Fetch root templates
         root_data = self._fetch_from_api(GITHUB_API_BASE)
         if not root_data:
@@ -149,7 +149,7 @@ class TemplateManager:
     def _save_manifest(self) -> None:
         """Save manifest to cache file."""
         try:
-            with open(MANIFEST_FILE, 'w') as f:
+            with open(MANIFEST_FILE, 'w', encoding='utf-8') as f:
                 json.dump(self._manifest, f, indent=2)
         except Exception as e:
             print(f"Warning: Could not save manifest cache: {e}")
@@ -164,7 +164,7 @@ class TemplateManager:
         """Build a searchable index of all templates (lowercase for fuzzy matching)."""
         manifest = self.get_manifest()
         index = {}
-        
+
         for category in ['root', 'Global', 'community']:
             for full_name in manifest.get(category, {}):
                 # Index by full name and individual parts
@@ -174,7 +174,7 @@ class TemplateManager:
                         index[part] = []
                     if full_name not in index[part]:
                         index[part].append(full_name)
-        
+
         return index
 
     def search_templates(self, query: str) -> List[str]:
@@ -217,7 +217,7 @@ class TemplateManager:
         First checks cache, then fetches from GitHub if needed.
         """
         manifest = self.get_manifest()
-        
+
         # Find template in manifest
         template_info = None
         for category in ['root', 'Global', 'community']:
@@ -232,7 +232,7 @@ class TemplateManager:
         cache_file = TEMPLATES_CACHE_DIR / f"{template_name.replace('/', '_')}.gitignore"
         if cache_file.exists():
             try:
-                with open(cache_file, 'r') as f:
+                with open(cache_file, 'r', encoding='utf-8') as f:
                     return f.read()
             except Exception:
                 pass
@@ -244,15 +244,15 @@ class TemplateManager:
             download_url = f"{GITHUB_RAW_BASE}/{template_info['path']}"
 
         content = self._fetch_from_api(download_url)
-        
+
         if content:
             # Cache the content
             try:
-                with open(cache_file, 'w') as f:
+                with open(cache_file, 'w', encoding='utf-8') as f:
                     f.write(content)
             except Exception:
                 pass
-        
+
         return content
 
     def get_all_templates(self) -> Dict[str, List[str]]:
@@ -271,7 +271,7 @@ class TemplateManager:
         Returns the resolved template name or None if not found.
         """
         manifest = self.get_manifest()
-        
+
         # Exact match (case-insensitive)
         for category in ['root', 'Global', 'community']:
             for full_name in manifest.get(category, {}):
@@ -280,10 +280,10 @@ class TemplateManager:
 
         # Search for matches
         matches = self.search_templates(template_name)
-        
+
         if len(matches) == 1:
             return matches[0]
-        elif len(matches) > 1:
+        if len(matches) > 1:
             return None  # Ambiguous - let caller handle showing options
-        
+
         return None

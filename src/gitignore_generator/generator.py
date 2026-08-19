@@ -3,7 +3,6 @@
 Handles combining templates, removing duplicates, and preserving existing content.
 """
 
-import re
 from pathlib import Path
 from typing import List
 from typing import Optional
@@ -32,19 +31,19 @@ class GitignoreGenerator:
         """
         # Normalize section header
         header = self._normalize_template_name(template_name)
-        
+
         # Create header line
         header_line = f"##### {header} #####"
-        
+
         # Create decorative lines with same length as header
         decorator = "#" * len(header_line)
-        
+
         # Create section
         section = decorator + "\n"
         section += header_line + "\n"
         section += decorator + "\n"
         section += content.rstrip() + "\n"
-        
+
         return section
 
     def _normalize_template_name(self, name: str) -> str:
@@ -88,28 +87,28 @@ class GitignoreGenerator:
         """
         merged = ""
         all_rules = set()
-        
+
         # Preserve existing rules if requested
         if preserve_existing and existing_content:
             existing_rules = self._extract_rules(existing_content)
             all_rules.update(existing_rules)
-            
+
             # Add existing content (without our markers) if it doesn't have them
             if "##### Project Specific #####" not in existing_content:
                 merged += existing_content.rstrip() + "\n\n"
-        
+
         # Process each template
         for template_name, content in templates:
             template_rules = self._extract_rules(content)
-            
+
             # Filter out duplicate rules
             new_rules = template_rules - all_rules
             all_rules.update(template_rules)
-            
+
             if new_rules:  # Only add section if it has new rules
                 section = self.template_to_section(template_name, content)
                 merged += section + "\n"
-        
+
         # Add marker for user's additional rules
         this_repo_header = "##### Project Specific #####"
         decorator = "#" * len(this_repo_header)
@@ -117,7 +116,7 @@ class GitignoreGenerator:
         merged += this_repo_header + "\n"
         merged += decorator + "\n"
         merged += "# Add your project-specific rules below this line\n"
-        
+
         return merged.rstrip() + "\n"
 
     def generate(
@@ -135,30 +134,30 @@ class GitignoreGenerator:
         """
         if not templates:
             return False, "No templates provided"
-        
+
         # Check if file exists
         exists = self.output_path.exists()
-        
+
         if exists and merge_strategy == 'cancel':
             return False, "Operation cancelled"
-        
+
         try:
             if exists and merge_strategy == 'append':
                 # Read existing content
-                with open(self.output_path, 'r') as f:
+                with open(self.output_path, 'r', encoding='utf-8') as f:
                     existing = f.read()
                 merged = self.merge_templates(templates, preserve_existing=True, existing_content=existing)
             else:
                 # Create new or overwrite
                 merged = self.merge_templates(templates, preserve_existing=False)
-            
+
             # Write file
-            with open(self.output_path, 'w') as f:
+            with open(self.output_path, 'w', encoding='utf-8') as f:
                 f.write(merged)
-            
+
             action = "Created" if not exists or merge_strategy == 'overwrite' else "Updated"
             return True, f"{action} .gitignore successfully!"
-        
+
         except Exception as e:
             return False, f"Error writing .gitignore: {e}"
 
@@ -171,22 +170,22 @@ class GitignoreGenerator:
             Tuple of (is_valid: bool, warnings: List[str])
         """
         warnings = []
-        
+
         for line_num, line in enumerate(content.split('\n'), 1):
             stripped = line.strip()
-            
+
             # Check for common issues
             if stripped.startswith('//'):
                 warnings.append(f"Line {line_num}: C-style comments not supported, use '#'")
-            
+
             if stripped.startswith('/*'):
                 warnings.append(f"Line {line_num}: Consider using '#' for comments")
-            
+
             # Check for suspicious patterns
             if '**' in stripped and not stripped.startswith('#'):
                 # This is OK but might indicate confusion with glob patterns
                 pass
-        
+
         return len(warnings) == 0, warnings
 
     def diff_templates(self, existing_content: str, new_templates: List[Tuple[str, str]]) -> str:
@@ -200,21 +199,21 @@ class GitignoreGenerator:
         """
         existing_rules = self._extract_rules(existing_content)
         new_rules = set()
-        
+
         for _, content in new_templates:
             new_rules.update(self._extract_rules(content))
-        
+
         duplicates = existing_rules & new_rules
         additions = new_rules - existing_rules
-        
+
         summary = f"Duplicate rules to skip: {len(duplicates)}\n"
         summary += f"New rules to add: {len(additions)}\n"
-        
+
         if duplicates:
             summary += f"\nDuplicate rules (examples):\n"
             for rule in sorted(duplicates)[:5]:
                 summary += f"  - {rule}\n"
             if len(duplicates) > 5:
                 summary += f"  ... and {len(duplicates) - 5} more\n"
-        
+
         return summary

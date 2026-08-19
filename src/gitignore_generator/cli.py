@@ -60,11 +60,11 @@ class GitignoreGeneratorCLI:
             List of (template_name, content) tuples
         """
         resolved_templates = []
-        
+
         for template_name in template_names:
             # Try exact match first
             resolved = self.template_manager.resolve_template(template_name)
-            
+
             if resolved:
                 # Found single match
                 content = self.template_manager.get_template_content(resolved)
@@ -73,14 +73,14 @@ class GitignoreGeneratorCLI:
                 else:
                     show_message(f"Failed to fetch template: {template_name}", "error")
                 continue
-            
+
             # Try searching
             matches = self.template_manager.search_templates(template_name)
-            
+
             if not matches:
                 show_message(f"Template not found: {template_name}", "warning")
                 continue
-            
+
             if len(matches) == 1:
                 # Exactly one match
                 resolved = matches[0]
@@ -98,7 +98,7 @@ class GitignoreGeneratorCLI:
                         resolved_templates.append((selected, content))
                     else:
                         show_message(f"Failed to fetch template: {selected}", "error")
-        
+
         return resolved_templates
 
     def run(self) -> int:
@@ -108,7 +108,7 @@ class GitignoreGeneratorCLI:
         """
         print(f"✓ Gitignore Generator v{__version__}")
         print("=" * 50)
-        
+
         # Step 1: Check for existing .gitignore
         gitignore_exists = self.generator.output_path.exists()
         if gitignore_exists:
@@ -118,18 +118,18 @@ class GitignoreGeneratorCLI:
                 return 1
         else:
             merge_strategy = 'create'
-        
+
         # Step 2: Prompt and resolve OS selection
         selected_os = prompt_os_selection()
         os_template_names = self._map_os_to_templates(selected_os)
         show_message("Resolving OS templates...", "info")
         os_templates = self._fetch_and_resolve_templates(os_template_names)
-        
+
         # Step 3: Prompt and resolve programming languages
         selected_languages = prompt_and_resolve_languages(self.template_manager)
         show_message("Resolving language templates...", "info")
         language_templates = self._fetch_and_resolve_templates(selected_languages)
-        
+
         # Step 4: Prompt and resolve additional templates
         additional_template_names = prompt_additional_templates(self.template_manager)
         if additional_template_names:
@@ -138,42 +138,42 @@ class GitignoreGeneratorCLI:
         else:
             additional_templates = []
             additional_template_names = []
-        
+
         # Step 5: Combine all resolved templates
         self.selected_templates = os_templates + language_templates + additional_templates
-        
+
         if not self.selected_templates:
             show_message("No templates selected", "warning")
             return 1
-        
+
         # Step 6: Show summary and confirm
         if not show_summary(selected_os, selected_languages, additional_template_names):
             show_message("Operation cancelled", "info")
             return 1
-        
+
         # Step 7: Show dry-run preview
         if gitignore_exists and merge_strategy == 'append':
-            with open(self.generator.output_path, 'r') as f:
+            with open(self.generator.output_path, 'r', encoding='utf-8') as f:
                 existing = f.read()
             print(self.generator.diff_templates(existing, self.selected_templates))
-        
+
         if not prompt_dry_run(self.selected_templates):
             show_message("Operation cancelled", "info")
             return 1
-        
+
         # Step 8: Generate .gitignore
         success, message = self.generator.generate(
             self.selected_templates,
             merge_strategy=merge_strategy
         )
-        
+
         if success:
             show_message(message, "success")
             show_message(f"Location: {self.generator.output_path.absolute()}", "info")
             return 0
-        else:
-            show_message(message, "error")
-            return 1
+
+        show_message(message, "error")
+        return 1
 
     def run_with_args(self, args: Optional[List[str]] = None) -> int:
         """
@@ -185,12 +185,12 @@ class GitignoreGeneratorCLI:
         """
         if args is None:
             args = []
-        
+
         # Handle basic flags
         if '--version' in args or '-v' in args:
             print(f"gitignore-generator {__version__}")
             return 0
-        
+
         if '--help' in args or '-h' in args:
             print("""
 Gitignore Generator - Generate .gitignore files from GitHub templates
@@ -205,7 +205,7 @@ Options:
   --output FILE     Output file (default: .gitignore)
             """)
             return 0
-        
+
         # Run interactive CLI
         return self.run()
 
