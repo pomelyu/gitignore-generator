@@ -300,5 +300,6 @@ __marimo__/
 ##### Project Specific #####
 ############################
 # Add your project-specific rules below this line
+!*.spec
 archived
 .codegraph
